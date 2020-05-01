@@ -2,10 +2,10 @@
 
 
 
-#define FASTLED_ALLOW_INTERRUPTS 0
 #include <FastLED.h>
 FASTLED_USING_NAMESPACE
 
+#define FASTLED_ALLOW_INTERRUPTS 0
 #define DATA_PIN            5
 #define NUM_LEDS            300
 #define MAX_POWER_MILLIAMPS 2100
@@ -20,15 +20,6 @@ CRGB leds[NUM_LEDS];
 
 
 
-// you could also use any other pre-defined or custom 
-// color palette, e.g., 
-//CRGBPalette16 gCurrentPalette( PartyColors_p );
-// CRGBPalette16 gCurrentPalette( CloudColors_p );
-// CRGBPalette16 gCurrentPalette( LavaColors_p );
-
-// disable palette color 'blending'; i.e., we don't want to
-// blend between purple and orange (for example), we just want 
-// to use those raw colors directly.
 #define BLENDING NOBLEND
 
 
