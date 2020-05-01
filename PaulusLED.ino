@@ -1,9 +1,4 @@
 
-int sensor_value = 0;
-int threshold = 430; //Enter Your threshold value here
-int abs_value = 0;
-int ledCount = 200; //number of Bargraph LEDs
-int bargraph[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}; // Bargraph pins
 
 
 
@@ -11,10 +6,10 @@ int bargraph[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}; // Bargraph pins
 #include <FastLED.h>
 FASTLED_USING_NAMESPACE
 
-#define DATA_PIN           5
+#define DATA_PIN            5
 #define NUM_LEDS            300
-#define MAX_POWER_MILLIAMPS 2000
-#define LED_TYPE            WS2811
+#define MAX_POWER_MILLIAMPS 2100
+#define LED_TYPE            WS2813
 #define COLOR_ORDER         GRB
 
 CRGB leds[NUM_LEDS];
@@ -37,12 +32,8 @@ CRGB leds[NUM_LEDS];
 #define BLENDING NOBLEND
 
 
-int  workLED   = 50;
-int  ledStep   = 3;
 
 
-float currentAvg = 0;
-float prevValue = 0;
 float currValue = 0;
 float currThresh = 0;
 float currMin = 0;
@@ -66,9 +57,9 @@ void setup() {
     
     // tell FastLED about the LED strip configuration
     FastLED.addLeds<LED_TYPE,DATA_PIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip).setDither(BRIGHTNESS < 255);
-    //FastLED.addLeds<LED_TYPE,DATA_PIN,CLK_PIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip).setDither(BRIGHTNESS < 255);
-
+  
     FastLED.setMaxPowerInVoltsAndMilliamps( 5, MAX_POWER_MILLIAMPS);
+   
     // set master brightness control
     FastLED.setBrightness(BRIGHTNESS);
     
@@ -89,22 +80,28 @@ void loop() {
 
        
       currThresh = 0;currPeak =0;
-        for (int i=1;i<=200;i++)
+        for (int i=1;i<=200;i++)    
         {
+          // Read signal
           int temp = analogRead(A0);
+
+          // Sum up all the signals
           currThresh = currThresh + temp;
+
+          // Get the loudest signal so far
           if (currPeak < temp) { currPeak = temp; }
         }
+
+        // Get the average of the signals, then add a magic number (3) to set this as your sound threshold
         currThresh = currThresh/200 + 3;
       
-      //  sensor_value = analogRead(A0);
+        // Use the loudest signal to check with the threshold (for chicking the BEAT)
         currValue = currPeak;
 
       
 
-        uint8_t currSecond = (millis() / 1000) % 60;
-        static uint8_t lastSecond = 99;
         
+        // Every 16 seconds, select a new display MODE
         unsigned long time = millis();                         
         const unsigned long timeCheck = 16 * 1000;      // 16 seconds
         static unsigned long lastSampleTime = 0 - timeCheck; 
@@ -114,6 +111,7 @@ void loop() {
             currMode = random(1,20);
         }
 
+        // Apply the display MODE if it's different from the currrent (in this case, PREVIOUS) mode...
         if (currMode!=prevMode)
           {
            
@@ -121,8 +119,8 @@ void loop() {
             ChangePaletteMode(currMode);
             
           }
-          
-         
+        
+        // ...But if the new MODE is a BEAT MODE, display the BEAT mode ONLY if there is a big change in the sound
         if (currMode>10)  //BEAT MODE
         {
           if (currValue > currThresh )      //HAS BEAT
@@ -138,33 +136,17 @@ void loop() {
               }
           }
         }
+        //  Otherwise, just show the other display MODE
         else
         {
           static uint8_t startIndex = 0;
           startIndex = startIndex + 1; /* motion speed */
           FillLEDsFromPaletteColors(startIndex);
         }
-      
 
-          
-        Serial.print(currValue);
-       // Serial.print("    ");
-       // Serial.print(prevValue);
-       // Serial.print("    ");
-       // Serial.print(currentAvg);
-        Serial.print("    ");
-        Serial.println(currThresh);
 
-//
-//        currentAvg = (currValue + prevValue) / 2;
-//        
-//        currThresh = currentAvg + abs(currentAvg-currValue) ;
-//        
-//        prevValue = currValue;
-
-      
        FastLED.show();
-        FastLED.delay(500 / UPDATES_PER_SECOND);
+      FastLED.delay(500 / UPDATES_PER_SECOND);
 
 }
 void FillLEDsFromPaletteColors( uint8_t colorIndex)
