@@ -1,16 +1,20 @@
 {
     "configurations": [
         {
-            "name": "Win32",
+            "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "~/arduino-1.8.12",
+                "~/arduino-1.8.12/examples/libraries/FastLED",
+                "~/arduino-1.8.12/libraries",
+                "/home/paul/arduino-1.8.12/hardware/tools/avr/avr/include",
+                "/home/paul/arduino-1.8.12/hardware/tools/avr/lib/gcc/avr/7.3.0/include"
             ],
-            "defines": [
-                "_DEBUG",
-                "UNICODE",
-                "_UNICODE"
-            ],
-            "intelliSenseMode": "msvc-x64"
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "gnu++14",
+            "intelliSenseMode": "clang-x64"
         }
     ],
     "version": 4
